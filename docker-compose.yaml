@@ -1,0 +1,96 @@
+version: '3.3'
+
+services:
+    ######################################
+    # HTTP
+    ######################################
+    http:
+      image: tmparch:latest
+      env_file: .env
+      networks:
+        - tmparch-net
+      command: poetry run python main.py -c Http
+      profiles: [app]
+      ports:
+        - 8000:8000
+
+    ######################################
+    # Exec
+    ######################################
+    admin_exec:
+      image: tmparch:latest
+      env_file: .env
+      networks:
+        - tmparch-net
+      command: poetry run python main.py -c AdminExec
+      profiles: [app]
+
+    ######################################
+    # Rabbit consumer
+    ######################################
+    admin_rabbit_consumer:
+      image: tmparch:latest
+      env_file: .env
+      networks:
+        - tmparch-net
+      command: poetry run python main.py -c AdminRabbitConsumer
+      profiles: [app]
+
+
+    ######################################
+    # Services
+    ######################################
+    postgres:
+      image: postgres:14-alpine
+      env_file: .env
+      networks:
+        - tmparch-net
+      command: postgres -c 'max_connections=10000'
+      profiles: [db]
+      environment:
+        - POSTGRES_USER=$POSTGRES_USER
+        - POSTGRES_PASSWORD=$POSTGRES_PASSWORD
+      restart: unless-stopped
+
+    redis:
+      image: redis:alpine
+      env_file: .env
+      networks:
+        - tmparch-net
+      restart: unless-stopped
+      command: redis-server --save 20 1 --loglevel warning --requirepass $REDIS_PASSWORD
+      profiles: [db]
+
+    rabbitmq:
+      image: rabbitmq:3.13.1-management
+      env_file: .env
+      networks:
+        - tmparch-net
+      restart: always
+      environment:
+        - RABBITMQ_DEFAULT_USER=$RABBITMQ_USER
+        - RABBITMQ_DEFAULT_PASS=$RABBITMQ_PASSWORD
+      profiles: [db]
+
+    ######################################
+    # Dev tools
+    ######################################
+    postgres_migration:
+      image: tmparch:latest
+      env_file: .env
+      networks:
+        - tmparch-net
+      command: poetry run python migrate.py --apply
+      profiles: [dev_migration]
+
+    postgres_migration_fixtures:
+      image: tmparch:latest
+      env_file: .env
+      networks:
+        - tmparch-net
+      command: poetry run python migrate.py --apply --fixtures
+      profiles: [dev_migration_fixtures]
+
+
+networks:
+  tmparch-net:

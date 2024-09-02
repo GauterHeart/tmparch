@@ -1,0 +1,88 @@
+[tool.poetry]
+name = "Arch"
+version = "0.1.0"
+description = ""
+authors = ["..."]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+fastapi = "^0.110.2"
+uvicorn = "^0.29.0"
+python-dotenv = "^1.0.1"
+pydantic = {extras = ["email", "dotenv"], version = "^2.7.1"}
+httpx = {extras = ["socks"], version = "^0.27.0"}
+pydantic-settings = "^2.2.1"
+redis = "^5.0.4"
+asyncpg = "^0.29.0"
+loguru = "^0.7.2"
+cryptography = "^42.0.5"
+aio-pika = "^9.4.1"
+ujson = "^5.10.0"
+prometheus-fastapi-instrumentator = "^7.0.0"
+pytest = "8.2.2"
+pytest-asyncio = "0.23.7"
+
+
+[tool.poetry.group.formatter.dependencies]
+autoflake = "^2.3.1"
+docformatter = "^1.7.5"
+isort = "^5.13.2"
+black = "^24.4.0"
+
+
+[tool.poetry.group.linter.dependencies]
+mypy = "^1.9.0"
+flake8 = "^7.0.0"
+ruff = "^0.4.1"
+docformatter = "^1.7.5"
+
+
+[tool.poetry.group.migration.dependencies]
+psycopg2-binary = "^2.9.9"
+yoyo-migrations = "^8.2.0"
+
+
+[tool.poetry.group.dev.dependencies]
+types-ujson = "^5.10.0.20240515"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.isort]
+profile = "black"
+
+[tool.black]
+exclude = '''
+/(
+    \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | _build
+  | buck-out
+  | build
+  | dist
+)/
+'''
+
+
+[tool.pyright]
+venvPath = '../../../.venv/'
+venv = 'tmparch'
+exclude = [
+	"**/node_modules",
+    "**/__pycache__",
+    "src/experimental",
+    "src/typestubs",
+]
+reportMissingImports = true
+reportTypeshedErrors = false
+reportMissingTypeStubs = false
+strictParameterNoneValue = false
+reportOptionalMemberAccess = "none"
+reportUndefinedVariable = true
+typeCheckingMode = "basic"
+# typeCheckingMode = "strict"
