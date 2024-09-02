@@ -14,6 +14,16 @@ services:
       ports:
         - 8000:8000
 
+    http_lock:
+      image: tmparch:latest
+      env_file: .env
+      networks:
+        - tmparch-net
+      command: poetry run python main.py -c HttpLock
+      profiles: [app]
+      ports:
+        - 8001:8000
+
     ######################################
     # Exec
     ######################################
